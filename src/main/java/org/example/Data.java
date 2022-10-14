@@ -12,6 +12,10 @@ public class Data {
         this.file = new File(PATH + fileName);
     }
 
+    public Data(File fileName) {
+        this.file = fileName;
+    }
+
     public void saveFile(String text) {
         try (FileWriter fileWriter = new FileWriter(file)) {
             fileWriter.write(text);
