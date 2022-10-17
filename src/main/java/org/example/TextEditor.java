@@ -3,21 +3,29 @@ package org.example;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
+import java.io.File;
 
 public class TextEditor extends JFrame {
-    private final JTextField filenameField;
+    private JTextField searchField;
     private  JTextArea textArea;
-    private final TextEditorController textEditorController;
+    private TextEditorController textEditorController;
     JFileChooser jFileChooser;
+    private final String resourceFolderPath = String.format("src%smain%<sresources%<s", File.separator);
+    ImageIcon saveIcon = new ImageIcon(resourceFolderPath + "save_icon.png");
+    ImageIcon loadIcon = new ImageIcon(resourceFolderPath + "load_icon.png");
+    ImageIcon searchIcon = new ImageIcon(resourceFolderPath + "search_icon.png");
+    ImageIcon previousIcon = new ImageIcon(resourceFolderPath + "previous_icon.png");
+    ImageIcon nextIcon = new ImageIcon(resourceFolderPath + "next_icon.png");
 
 
     public TextEditor() {
         this.jFileChooser = new JFileChooser();
         jFileChooser.setName("FileChooser");
+        add(jFileChooser);
         this.textEditorController = new TextEditorController();
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(400, 300);
+        setSize(450, 300);
         setTitle("Text editor");
         setLocationRelativeTo(null);
 
@@ -33,7 +41,7 @@ public class TextEditor extends JFrame {
         menuBar.add(fileMenu);
 
         JMenuItem loadFileMenuItem = new JMenuItem("Load");
-        loadFileMenuItem.setName("MenuLoad");
+        loadFileMenuItem.setName("MenuOpen");
         JMenuItem saveFileMenuItem = new JMenuItem("Save");
         saveFileMenuItem.setName("MenuSave");
         JMenuItem exitMenuItem = new JMenuItem("Exit");
@@ -44,58 +52,73 @@ public class TextEditor extends JFrame {
         fileMenu.addSeparator();
         fileMenu.add(exitMenuItem);
 
+        JMenu searchMenu = new JMenu("Search");
+        searchMenu.setName("MenuSearch");
+        searchMenu.setMnemonic(KeyEvent.VK_S);
+        menuBar.add(searchMenu);
+
+        JMenuItem startSearchMenuItem = new JMenuItem("Start search");
+        startSearchMenuItem.setName("MenuStartSearch");
+
+        JMenuItem previousMatchMenuItem = new JMenuItem("Previous match");
+        previousMatchMenuItem.setName("MenuPreviousMatch");
+
+        JMenuItem nextMatchMenuItem = new JMenuItem("Next match");
+        nextMatchMenuItem.setName("MenuNextMatch");
+
+        JMenuItem useRegexMenuItem = new JMenuItem("Use regular expressions");
+        useRegexMenuItem.setName("MenuUseRegExp");
+
+        searchMenu.add(startSearchMenuItem);
+        searchMenu.add(previousMatchMenuItem);
+        searchMenu.add(nextMatchMenuItem);
+        searchMenu.add(useRegexMenuItem);
+
         // Border Layout North
         JPanel filePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         add(filePanel, BorderLayout.NORTH);
 
         //*************************************************************************************
-        ImageIcon saveIcon = new ImageIcon("C:\\Users\\rob_t\\JetBrainsAcademy\\JavaCore\\Hard\\TextEditor" +
-                "\\src\\main\\resources\\save_icon.png");
-
         JButton saveButton = new JButton(saveIcon);
         saveButton.setName("SaveButton");
         saveButton.setPreferredSize(new Dimension(25, 25));
         filePanel.add(saveButton);
 
         //****************************************************************************************
-        ImageIcon loadIcon = new ImageIcon("C:\\Users\\rob_t\\JetBrainsAcademy\\JavaCore\\Hard\\TextEditor\\src" +
-                "\\main\\resources\\load_icon.png");
-
         JButton loadButton = new JButton(loadIcon);
-        loadButton.setName("LoadButton");
+        loadButton.setName("OpenButton");
         loadButton.setPreferredSize(new Dimension(25, 25));
         filePanel.add(loadButton);
 
         //*********************************************************************************************
-        filenameField = new JTextField();
-        filenameField.setFont(new Font(Font.SERIF, Font.PLAIN, 16));
-        filenameField.setName("FilenameField");
-        filenameField.setPreferredSize(new Dimension(150, 25));
-        filePanel.add(filenameField);
+        searchField = new JTextField();
+        searchField.setFont(new Font(Font.SERIF, Font.PLAIN, 16));
+        searchField.setName("SearchField");
+        searchField.setPreferredSize(new Dimension(150, 25));
+        filePanel.add(searchField);
 
         //**************************************************************************************************
-        ImageIcon searchIcon = new ImageIcon("C:\\Users\\rob_t\\JetBrainsAcademy\\JavaCore\\Hard\\TextEditor" +
-                "\\src\\main\\resources\\search_icon.png");
         JButton searchButton = new JButton(searchIcon);
         searchButton.setName("StartSearchButton");
         searchButton.setPreferredSize(new Dimension(25, 25));
         filePanel.add(searchButton);
 
         //****************************************************************************************************
-        ImageIcon previousIcon = new ImageIcon("C:\\Users\\rob_t\\JetBrainsAcademy\\JavaCore\\Hard\\TextEditor" +
-                "\\src\\main\\resources\\previous_icon.png");
         JButton previousButton = new JButton(previousIcon);
         previousButton.setName("PreviousMatchButton");
         previousButton.setPreferredSize(new Dimension(25, 25));
         filePanel.add(previousButton);
 
         //****************************************************************************************************
-        ImageIcon nextIcon = new ImageIcon("C:\\Users\\rob_t\\JetBrainsAcademy\\JavaCore\\Hard\\TextEditor" +
-                "\\src\\main\\resources\\next_icon.png");
         JButton nextButton = new JButton(nextIcon);
         nextButton.setName("NextMatchButton");
         nextButton.setPreferredSize(new Dimension(25, 25));
         filePanel.add(nextButton);
+
+        //****************************************************************************************************
+        JCheckBox regexCheckBox = new JCheckBox("Use regex");
+        regexCheckBox.setName("UseRegExCheckbox");
+        filePanel.add(regexCheckBox);
 
 
 
@@ -128,8 +151,26 @@ public class TextEditor extends JFrame {
         saveButton.addActionListener(e -> textEditorController.saveFile(jFileChooser, textArea));
         loadButton.addActionListener(e -> textEditorController.loadFile(jFileChooser, textArea));
 
+        searchButton.addActionListener(e -> textEditorController.searchText(searchField, textArea, regexCheckBox));
+
+        nextButton.addActionListener(e -> textEditorController.next(textArea));
+        previousButton.addActionListener(e -> textEditorController.previous(textArea));
+
+        startSearchMenuItem.addActionListener(e -> {
+            regexCheckBox.setSelected(false);
+            textEditorController.searchText(searchField, textArea, regexCheckBox);
+        });
+
+        nextMatchMenuItem.addActionListener(e -> textEditorController.next(textArea));
+        previousMatchMenuItem.addActionListener(e -> textEditorController.previous(textArea));
+
+        useRegexMenuItem.addActionListener(e -> {
+            regexCheckBox.setSelected(true);
+            textEditorController.searchText(searchField, textArea, regexCheckBox);
+        });
 
 
         setVisible(true);
+
     }
 }
