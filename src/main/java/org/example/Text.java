@@ -28,7 +28,7 @@ public class Text {
             searchText = Pattern.quote(searchText);
         }
         //String searchTextQuote = Pattern.quote(searchText);
-        Pattern pattern = Pattern.compile(searchText);
+        Pattern pattern = Pattern.compile(searchText, Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(fileText);
         while (matcher.find()) {
             matchResults.add(matcher.toMatchResult());

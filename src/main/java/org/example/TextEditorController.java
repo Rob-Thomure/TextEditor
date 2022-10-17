@@ -2,7 +2,6 @@ package org.example;
 
 import javax.swing.*;
 import java.io.File;
-import java.util.concurrent.ExecutionException;
 import java.util.regex.MatchResult;
 
 public class TextEditorController {

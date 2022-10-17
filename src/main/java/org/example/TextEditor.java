@@ -157,7 +157,7 @@ public class TextEditor extends JFrame {
         previousButton.addActionListener(e -> textEditorController.previous(textArea));
 
         startSearchMenuItem.addActionListener(e -> {
-            regexCheckBox.setSelected(false);
+            //regexCheckBox.setSelected(false);
             textEditorController.searchText(searchField, textArea, regexCheckBox);
         });
 
@@ -166,7 +166,7 @@ public class TextEditor extends JFrame {
 
         useRegexMenuItem.addActionListener(e -> {
             regexCheckBox.setSelected(true);
-            textEditorController.searchText(searchField, textArea, regexCheckBox);
+            //textEditorController.searchText(searchField, textArea, regexCheckBox);
         });
 
 
